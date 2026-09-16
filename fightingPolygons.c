@@ -11,12 +11,6 @@ void put_pixel(int x, int y, uint32_t color) {
 	framebuffer[WIDTH * y + x] = color;
 }
 
-void draw_horizontal_line(int x1, int x2, int y, uint32_t color) {
-	for(int i=x1; i<=x2; i++)
-		put_pixel(i, y, color);
-}
-
-
 /*
 	Bresenham's line drawing Algorithm
 
@@ -45,19 +39,18 @@ void draw_line_H(int x0, int y0, int x1, int y1, uint32_t color) {
 	int dir = dy < 0 ? -1 : 1;
 	dy *= dir;
 	
-	if(dx != 0) {
-		int y = y0;
-		int p = 2*dy - dx;
+	
+	int y = y0;
+	int p = 2*dy - dx;
 
-		for(int i = 0; i <= dx; i++) {
-			put_pixel(x0 + i, y, color);
+	for(int i = 0; i <= dx; i++) {
+		put_pixel(x0 + i, y, color);
 
-			if(p >= 0) {
-				y += dir;
-				p = p - 2*dx;
-			}
-			p = p + 2*dy;
+		if(p >= 0) {
+			y += dir;
+			p = p - 2*dx;
 		}
+		p = p + 2*dy;
 	}
 }
 
@@ -79,19 +72,17 @@ void draw_line_V(int x0, int y0, int x1, int y1, uint32_t color) {
 	int dir = dx < 0 ? -1 : 1;
 	dx *= dir;
 	
-	if(dy != 0) {
-		int x = x0;
-		int p = 2*dx - dy;
+	int x = x0;
+	int p = 2*dx - dy;
 
-		for(int i = 0; i <= dy; i++) {
-			put_pixel(x, y0 + i, color);
+	for(int i = 0; i <= dy; i++) {
+		put_pixel(x, y0 + i, color);
 
-			if(p >= 0) {
-				x += dir;
-				p = p - 2*dy;
-			}
-			p = p + 2*dx;
+		if(p >= 0) {
+			x += dir;
+			p = p - 2*dy;
 		}
+		p = p + 2*dx;
 	}
 }
 
@@ -125,13 +116,65 @@ struct Point {
 	int y;
 };
 
+int min(int n0, int n1) {
+	if(n0 < n1)
+		return n0;
+	return n1;
+}
+
+int max(int n0, int n1) {
+	if(n0 > n1)
+		return n0;
+	return n1;
+}
+
 void draw_tri(struct Point point1, struct Point point2, struct Point point3, uint32_t color, bool fill) {
 	draw_line(point1.x, point1.y, point2.x, point2.y, color);
 	draw_line(point2.x, point2.y, point3.x, point3.y, color);
 	draw_line(point3.x, point3.y, point1.x, point1.y, color);
 
 	if(fill == true) {
-		// TODO
+		int closestX = min(min(point1.x, point2.x), point3.x);
+		int closestY = min(min(point1.y, point2.y), point3.y);
+		int farthestX = max(max(point1.x, point2.x), point3.x);
+		int farthestY = max(max(point1.y, point2.y), point3.y);
+
+		int vertices[farthestX - closestX];
+          	int index;
+
+		for(int i=closestY; i<farthestY; i++) {
+			memset(vertices, 0, sizeof(int) * (farthestX - closestX));
+			index = 0;
+
+			for(int j=closestX; j<=farthestX; j++) {
+				if(framebuffer[WIDTH * i + j] == color) {
+					vertices[index] = j;
+					index++;
+				}
+			}	
+		
+			
+			int x0 = 0;
+			int x1 = 0;
+			bool found = false;
+
+			for(int i=1; i<index; i++){
+				if(vertices[i] - vertices[i-1] > 1) {
+					x0 = vertices[i-1];
+					x1 = vertices[i];
+					found = true;
+					break;
+				}						
+			}
+			
+			if(found)
+				draw_line(x0, i, x1, i, color);	
+			
+		}		
+
+//		draw_rect(closestX, closestY, farthestX-closestX, farthestY-closestY, 0x00FF00, false);
+
+		
 	}
 }
 
@@ -150,8 +193,8 @@ int main(){
 
 	window = SDL_CreateWindow(
 		"SDL Framebuffer",
-		WIDTH * 4,
-		HEIGHT * 4,
+		WIDTH*4,
+		HEIGHT*4,
 		0
 	);
 
@@ -204,7 +247,7 @@ int main(){
 		
 		// TEST
 		
-		draw_rect(5, 4, 10, 5, 0xFF0000, false);
+	//	draw_rect(5, 4, 10, 5, 0xFF0000, false);
 		
 		struct Point point1;
 		struct Point point2;
@@ -212,9 +255,9 @@ int main(){
 
 		point1.x = 10; point1.y = 120;
 		point2.x = 20; point2.y = 20;
-		point3.x = 30; point3.y = 100;
-
-		draw_tri(point1, point2, point3, 0xFF0000, true);		
+		point3.x = 40; point3.y = 100;
+		
+		draw_tri(point1, point2, point3, 0xFF0000, true);
 		
 		///////////
 
