@@ -13,11 +13,11 @@ typedef struct {
 
 void put_pixel(int x, int y, uint32_t color);
 
-void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
+void draw_line(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t colorB);
 
 void draw_rect(int x, int y, int width, int height, uint32_t color, bool fill);
 
-void draw_tri(Point point1, Point point2, Point point3, uint32_t color, bool fill);
+void draw_tri(Point point1, Point point2, Point point3, uint32_t colorA, uint32_t colorB, uint32_t colorC, bool fill);
 
 
 #endif

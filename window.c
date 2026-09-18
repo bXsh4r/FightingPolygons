@@ -3,8 +3,8 @@
 #include <SDL3/SDL.h>
 #include <stdio.h>
 
-#define WIDTH 320
-#define HEIGHT 200
+#define WIDTH 320*4
+#define HEIGHT 200*4
 
 uint32_t framebuffer[WIDTH * HEIGHT];
 
@@ -23,8 +23,8 @@ int create_window(){
 
 	window = SDL_CreateWindow(
 		"SDL Framebuffer",
-		WIDTH * 4,
-		HEIGHT * 4,
+		WIDTH,
+		HEIGHT,
 		0
 	);
 
@@ -100,12 +100,23 @@ int main() {
 
 	
 	draw_init(framebuffer, WIDTH, HEIGHT);
+
+	Point point1 = {
+		.x = 20*4,
+		.y = 120*4
+	};
 	
-	/*
-		draw functions go here
-	*/
+	Point point2 = {
+		.x = 60*4,
+		.y = 20*4
+	};
 
+	Point point3 = {
+		.x = 100*4,
+		.y = 120*4
+	};
 
+	draw_tri(point1, point2, point3, 0x0000FF, 0xFF0000, 0x00FF00, true);
 	if(create_window() == 1) {
 		return 1;
 	}
