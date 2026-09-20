@@ -1,7 +1,6 @@
 #include "draw.h"
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
 static uint32_t* framebuffer;	
@@ -17,6 +16,8 @@ void draw_init(uint32_t* fb, int w, int h) {
 void put_pixel(int x, int y, uint32_t color) {
 	framebuffer[width * y + x] = color;
 }
+
+
 
 /*
 
@@ -127,7 +128,8 @@ void draw_line(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t colorB)
 	}
 }	
 
-/*
+/* Lets currently focus on drawing a triangle
+
 void draw_rect(int x, int y, int width, int height, uint32_t color, bool fill) {
 	int x1 = x + width;
 	int y1 = y + height;
@@ -145,12 +147,6 @@ void draw_rect(int x, int y, int width, int height, uint32_t color, bool fill) {
 }
 */
 
-
-struct Point {
-	int x;
-	int y;
-};
-
 int min(int n0, int n1) {
 	if(n0 < n1)
 		return n0;
@@ -163,10 +159,10 @@ int max(int n0, int n1) {
 	return n1;
 }
 
-void draw_tri(Point point1, Point point2, Point point3, uint32_t colorA, uint32_t colorB, uint32_t colorC, bool fill) {
-	draw_line(point1.x, point1.y, colorB, point2.x, point2.y, colorA);
-	draw_line(point2.x, point2.y, colorB, point3.x, point3.y, colorC);
-	draw_line(point1.x, point1.y, colorA, point3.x, point3.y, colorC);
+void draw_tri(Vertex point1, Vertex point2, Vertex point3, bool fill) {
+	draw_line(point1.x, point1.y, point2.color, point2.x, point2.y, point1.color);
+	draw_line(point2.x, point2.y, point2.color, point3.x, point3.y, point3.color);
+	draw_line(point1.x, point1.y, point1.color, point3.x, point3.y, point3.color);
 
 	if(fill == true) {
 		int closestX = min(min(point1.x, point2.x), point3.x);
@@ -174,8 +170,7 @@ void draw_tri(Point point1, Point point2, Point point3, uint32_t colorA, uint32_
 		int farthestX = max(max(point1.x, point2.x), point3.x);
 		int farthestY = max(max(point1.y, point2.y), point3.y);
 
-		int vertices[farthestX - closestX];
-		int colors[farthestX - closestX];
+		Vertex vertices[farthestX - closestX];
           	int index;
 
 		for(int i=closestY; i<farthestY; i++) {
@@ -184,8 +179,8 @@ void draw_tri(Point point1, Point point2, Point point3, uint32_t colorA, uint32_
 
 			for(int j=closestX; j<=farthestX; j++) {
 				if(framebuffer[width * i + j] != 0) {
-					vertices[index] = j;
-					colors[index] = framebuffer[width * i + j];
+					vertices[index].x = j;
+					vertices[index].color = framebuffer[width * i + j];
 					index++;
 				}
 			}	
@@ -198,22 +193,20 @@ void draw_tri(Point point1, Point point2, Point point3, uint32_t colorA, uint32_
 			bool found = false;
 
 			for(int i=1; i<index; i++){
-				if(vertices[i] - vertices[i-1] > 1) {
-					x0 = vertices[i-1];
-					x1 = vertices[i];
-					colorA = colors[i-1];
-					colorB = colors[i];
+				if(vertices[i].x - vertices[i-1].x > 1) {
+					x0 = vertices[i-1].x;
+					colorA = vertices[i-1].color;
+
+					x1 = vertices[i].x;
+					colorB = vertices[i].color;
+
 					found = true;
 					break;
 				}						
 			}
 			
 			if(found)
-				draw_line(x0, i, colorA, x1, i, colorB);	
-			
-					
+				draw_line(x0, i, colorA, x1, i, colorB);					
 		}
 	}
 }
-
-

@@ -1,4 +1,6 @@
+#include "vertex.h"
 #include "draw.h"
+#include "transformation2d.h"
 
 #include <SDL3/SDL.h>
 #include <stdio.h>
@@ -101,22 +103,19 @@ int main() {
 	
 	draw_init(framebuffer, WIDTH, HEIGHT);
 
-	Point point1 = {
-		.x = 20*4,
-		.y = 120*4
-	};
+	Vertex vertices[] = {{70, 100, 0x0000FF}, {110, 20, 0xFF0000}, {150, 120, 0x00FF00}};
 	
-	Point point2 = {
-		.x = 60*4,
-		.y = 20*4
-	};
+	Matrix rotate = rotaion_matrix(30);
 
-	Point point3 = {
-		.x = 100*4,
-		.y = 120*4
-	};
+	transform(vertices, 3, &rotate);	
 
-	draw_tri(point1, point2, point3, 0x0000FF, 0xFF0000, 0x00FF00, true);
+	for(int i=0; i<3; i++) {
+		printf("index: %d, new x: %.2f, new y: %.2f\n", i, vertices[i].x, vertices[i].y);
+	}
+	
+	draw_tri(vertices[0], vertices[1], vertices[2], true);
+		
+
 	if(create_window() == 1) {
 		return 1;
 	}
