@@ -11,13 +11,12 @@
 uint32_t framebuffer[WIDTH * HEIGHT];
 
 
-void update_screen(int value) {
+void update_screen(float value) {
 	
-	Vertex vertices[] = {{200, 400, 0x0000FF}, {280, 240, 0xFF0000}, {360, 440, 0x00FF00}};
+	Vertex vertices[] = {{200, 600, 0x0000FF}, {280, 440, 0xFF0000}, {360, 640, 0x00FF00}};
 	
-	Matrix translate = translation_matrix(value, 0);
-
-	transform(vertices, 3, &translate);	
+	Matrix rotate = rotation_matrix(value);
+	transform(vertices, 3, &rotate);	
 
 	for(int i=0; i<3; i++) {
 		printf("index: %d, new x: %.2f, new y: %.2f\n", i, vertices[i].x, vertices[i].y);
@@ -86,7 +85,7 @@ int create_window(){
 	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST); // copy the original pixel to make new pixels which results in a bigger sharp pixel
 
 	uint8_t isRunning = true;
-	int value = 0;
+	float value = 0.0f;
 	while(isRunning) {
 
 		uint64_t start = SDL_GetPerformanceCounter();
@@ -99,7 +98,7 @@ int create_window(){
 
 		
 		memset(framebuffer, 0, sizeof(int) * WIDTH * HEIGHT);	
-		value %= (320 * 4); // extremely important limits the value from getting bigger than the width (it will still be bigger because its "x + value" but still small enough to not cause any overflow)
+	//	value %= (320 * 4); // extremely important limits the value from getting bigger than the width (it will still be bigger because its "x + value" but still small enough to not cause any overflow)
 		update_screen(value);
 
 
@@ -122,7 +121,7 @@ int create_window(){
 			SDL_Delay((target_frame - elapsed) * 1000);
 		}
 
-		value += 5;
+		value += 0.5f;
 	}
 
 	SDL_DestroyTexture(texture);
