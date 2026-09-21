@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-static uint32_t* framebuffer;	
+static uint32_t *framebuffer;	
 static int width;
 static int height;
 
-void draw_init(uint32_t* fb, int w, int h) {
+void draw_init(uint32_t *fb, int w, int h) {
 	framebuffer = fb;
 	width = w;
 	height = h;
@@ -20,7 +20,6 @@ void put_pixel(int x, int y, uint32_t color) {
 
 
 /*
-
 	Bresenham's line drawing Algorithm
 
 	basically what we are trying to do is get p which is the current y position on the line (x position multiplied by the slope)
@@ -44,23 +43,29 @@ uint32_t scaleColor(uint32_t color, float t) {
 	return (r << 16) | (g << 8) | b;
 }
 
-uint32_t lerp(int p0, uint32_t colorA, int p1, uint32_t colorB, int pTarget) {
+uint32_t lerp(int p0, uint32_t colorA, int p1, uint32_t colorB, int pTarget, bool reverse) {
 	float t = (float)(pTarget - p0) / (p1 - p0);
 	
-	return scaleColor(colorA, 1-t) + scaleColor(colorB, t);	
+	if(!reverse)	
+		return scaleColor(colorA, 1-t) + scaleColor(colorB, t);	
+	return scaleColor(colorA, t) + scaleColor(colorB, 1-t);
 }
 
 void draw_line_H(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t colorB) {
-
+	
+	bool reverse = false;
+	
 	if(x0 > x1) {
-		x0 = x0 - x1;
-		x1 = x0 + x1;
-		x0 = x1 - x0;
+		int temp = x0;
+		x0 = x1;
+		x1 = temp;
 
-		y0 = y0 - y1;
-		y1 = y0 + y1;
-		y0 = y1 - y0;
-	}
+		temp = y0;
+		y0 = y1;
+		y1 = temp;
+
+		reverse = true;
+	}	
 
 	int dx = x1 - x0;
 	int dy = y1 - y0;
@@ -74,7 +79,7 @@ void draw_line_H(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t color
 	uint32_t color;
 
 	for(int i = 0; i <= dx; i++) {
-		color = lerp(x0, colorA, x1, colorB, x0+i);
+		color = lerp(x0, colorA, x1, colorB, x0+i, reverse);
 		put_pixel(x0 + i, y, color);
 
 		if(p >= 0) {
@@ -87,14 +92,18 @@ void draw_line_H(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t color
 
 void draw_line_V(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t colorB) {
 
-	if(y0 > y1) {
-		x0 = x0 - x1;
-		x1 = x0 + x1;
-		x0 = x1 - x0;
+	bool reverse = false;
 
-		y0 = y0 - y1;
-		y1 = y0 + y1;
-		y0 = y1 - y0;
+	if(y0 > y1) {
+		int temp = x0;
+		x0 = x1;
+		x1 = temp;
+
+		temp = y0;
+		y0 = y1;
+		y1 = temp;
+
+		reverse = true;
 	}
 
 	int dx = x1 - x0;
@@ -108,7 +117,7 @@ void draw_line_V(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t color
 	uint32_t color;
 
 	for(int i = 0; i <= dy; i++) {
-		color = lerp(y0, colorA, y1, colorB, y0+i);
+		color = lerp(y0, colorA, y1, colorB, y0+i, reverse);
 		put_pixel(x, y0 + i, color);
 
 		if(p >= 0) {
@@ -127,6 +136,7 @@ void draw_line(int x0, int y0, uint32_t colorA, int x1, int y1, uint32_t colorB)
 		draw_line_V(x0, y0, colorA, x1, y1, colorB);
 	}
 }	
+
 
 /* Lets currently focus on drawing a triangle
 
@@ -147,6 +157,7 @@ void draw_rect(int x, int y, int width, int height, uint32_t color, bool fill) {
 }
 */
 
+
 int min(int n0, int n1) {
 	if(n0 < n1)
 		return n0;
@@ -160,7 +171,7 @@ int max(int n0, int n1) {
 }
 
 void draw_tri(Vertex point1, Vertex point2, Vertex point3, bool fill) {
-	draw_line(point1.x, point1.y, point2.color, point2.x, point2.y, point1.color);
+	draw_line(point1.x, point1.y, point1.color, point2.x, point2.y, point2.color);
 	draw_line(point2.x, point2.y, point2.color, point3.x, point3.y, point3.color);
 	draw_line(point1.x, point1.y, point1.color, point3.x, point3.y, point3.color);
 

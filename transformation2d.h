@@ -9,7 +9,7 @@ typedef struct  {
 
 Matrix translation_matrix(float tx, float ty);
 
-Matrix rotaion_matrix(float degree);
+Matrix rotation_matrix(float degree);
 
 Matrix scaling_matrix(float sx, float sy);
 

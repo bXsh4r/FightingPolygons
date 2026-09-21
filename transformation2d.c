@@ -11,7 +11,7 @@ Matrix translation_matrix(float tx, float ty) {
 	}};
 }
 
-Matrix rotaion_matrix(float degree) {
+Matrix rotation_matrix(float degree) {
 	float rad = degree * M_PI / 180;
 
 	return (Matrix) {{
