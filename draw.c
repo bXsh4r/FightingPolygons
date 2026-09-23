@@ -14,7 +14,7 @@ void draw_init(uint32_t *fb, int w, int h) {
 }
 
 void put_pixel(int x, int y, uint32_t color) {
-	framebuffer[width * y + x] = color;
+	framebuffer[width * y + x] = color;  // y >= or y < height crashes the program TODO: FIX IT
 }
 
 

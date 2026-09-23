@@ -55,7 +55,7 @@ void linear_transform(Vertex *vertices, int size, const Matrix *m) {
 }
 
 // For translation
-void affline_transform(Vertex *vertices, Vertex *original_vertices, int size, const Matrix *m) {	
+void affline_transform(Vertex *vertices, Vertex *original_vertices, int size, const Matrix *m, int screen_width) {	
 	float x, y;
 	
 	for(int i=0; i<size; i++) {
@@ -65,11 +65,11 @@ void affline_transform(Vertex *vertices, Vertex *original_vertices, int size, co
 		vertices[i].x = (m->matrix[0][0] * x) + (m->matrix[0][1] * y) + (m->matrix[0][2]);
 		vertices[i].y = (m->matrix[1][0] * x) + (m->matrix[1][1] * y) + (m->matrix[1][2]);
 
-		// maps back to original which messes up rotated and scaled coordinates
-		if(vertices[i].x >= (320*4+original_vertices[i].x)) {
-			vertices[0].x = original_vertices[0].x;
-			vertices[1].x = original_vertices[1].x;
-			vertices[2].x = original_vertices[2].x;
+		// maps back to original with current vertices offset
+		if(vertices[i].x >= (screen_width+original_vertices[i].x)) {
+			vertices[0].x = vertices[0].x - screen_width;
+			vertices[1].x = vertices[1].x - screen_width;
+			vertices[2].x = vertices[2].x - screen_width;
 		}	
 	}	
 }

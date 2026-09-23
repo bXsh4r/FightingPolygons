@@ -22,7 +22,7 @@ void update_screen(float value, float degree, Vertex *vertices, Vertex *original
 	linear_transform(vertices, 3, &rotate);
 
 	Matrix translate = translation_matrix(2, 0);
-//	affline_transform(vertices, original_vertices, 3, &translate);   // TODO: Fix
+	affline_transform(vertices, original_vertices, 3, &translate, WIDTH);
 
 	for(int i=0; i<3; i++) {
 		printf("index: %d, new x: %.2f, new y: %.2f\n", i, vertices[i].x, vertices[i].y);
@@ -98,7 +98,7 @@ int create_window(){
 	int scale = 2;
 	float target = n * (float) scale;
 	Vertex vertices[] = {{200, 600, 0x0000FF}, {280, 440, 0xFF0000}, {360, 640, 0x00FF00}};
-	Vertex original_vertices[] = {{200, 600, 0x0000FF}, {280, 440, 0xFF0000}, {360, 640, 0x00FF00}};  // For translation to map it back in place (breaks other transformations)
+	Vertex original_vertices[] = {{200, 600, 0x0000FF}, {280, 440, 0xFF0000}, {360, 640, 0x00FF00}};  // For translation to map it back in place
 
 	while(isRunning) {
 
