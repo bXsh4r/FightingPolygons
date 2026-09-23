@@ -13,7 +13,8 @@ Matrix rotation_matrix(float degree);
 
 Matrix scaling_matrix(float sx, float sy);
 
-void transform(Vertex *vertices, int size, const Matrix *m);
+void linear_transform(Vertex *vertices, int size, const Matrix *m);
 
+void affline_transform(Vertex *vertices, Vertex *original_vertices, int size, const Matrix *m);
 
 #endif
