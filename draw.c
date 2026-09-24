@@ -14,7 +14,11 @@ void draw_init(uint32_t *fb, int w, int h) {
 }
 
 void put_pixel(int x, int y, uint32_t color) {
-	framebuffer[width * y + x] = color;  // y >= or y < height crashes the program TODO: FIX IT
+
+	if(y >= height || y < 0 || width * y + x >= width * height)
+		return;
+
+	framebuffer[width * y + x] = color;
 }
 
 
@@ -184,14 +188,18 @@ void draw_tri(Vertex point1, Vertex point2, Vertex point3, bool fill) {
 		Vertex vertices[farthestX - closestX];
           	int index;
 
-		for(int i=closestY; i<farthestY; i++) {
+		for(int y=closestY; y<farthestY; y++) {
 			memset(vertices, 0, sizeof(int) * (farthestX - closestX));
 			index = 0;
 
-			for(int j=closestX; j<=farthestX; j++) {
-				if(framebuffer[width * i + j] != 0) {
-					vertices[index].x = j;
-					vertices[index].color = framebuffer[width * i + j];
+			for(int x=closestX; x<=farthestX; x++) {
+
+				if(y >= height || y < 0 || width * y + x >= width * height)
+					continue;
+
+				if(framebuffer[width * y + x] != 0) {
+					vertices[index].x = x;
+					vertices[index].color = framebuffer[width * y + x];
 					index++;
 				}
 			}	
@@ -217,7 +225,7 @@ void draw_tri(Vertex point1, Vertex point2, Vertex point3, bool fill) {
 			}
 			
 			if(found)
-				draw_line(x0, i, colorA, x1, i, colorB);					
+				draw_line(x0, y, colorA, x1, y, colorB);					
 		}
 	}
 }
