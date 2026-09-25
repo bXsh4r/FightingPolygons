@@ -67,9 +67,14 @@ void affline_transform(Vertex *vertices, Vertex *original_vertices, int size, co
 
 		// maps back to original with current vertices offset
 		if(vertices[i].x >= (screen_width+original_vertices[i].x)) {
-			vertices[0].x = vertices[0].x - screen_width;
-			vertices[1].x = vertices[1].x - screen_width;
-			vertices[2].x = vertices[2].x - screen_width;
-		}	
+			vertices[0].x = (vertices[0].x - screen_width);
+			vertices[1].x = (vertices[1].x - screen_width);
+			vertices[2].x = (vertices[2].x - screen_width);
+		}
+		else if(fabs(vertices[i].x) >= (screen_width+original_vertices[i].x)) {
+			vertices[0].x = (fabs(vertices[0].x) - screen_width)*-1.0f;
+			vertices[1].x = (fabs(vertices[1].x) - screen_width)*-1.0f;
+			vertices[2].x = (fabs(vertices[2].x) - screen_width)*-1.0f;
+		}		
 	}	
 }

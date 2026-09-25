@@ -21,7 +21,7 @@ void update_screen(float value, float degree, Vertex *vertices, Vertex *original
 	Matrix rotate = rotation_matrix(degree);
 	linear_transform(vertices, 3, &rotate);
 
-	Matrix translate = translation_matrix(-2, 0);  // TODO: FIX X NEGATIVE KEEPS INCREASING
+	Matrix translate = translation_matrix(-2, 0);
 	affline_transform(vertices, original_vertices, 3, &translate, WIDTH);
 
 	for(int i=0; i<3; i++) {
@@ -97,8 +97,8 @@ int create_window(){
 	float n = 2.0f;
 	int scale = 2;
 	float target = n * (float) scale;
-	Vertex vertices[] = {{200, 50, 0x00FF00}, {280, 290, 0xFFFFFF}, {460, 310, 0x0000FF}};
-	Vertex original_vertices[] = {{200, 50, 0x0000FF}, {280, 290, 0xFF0000}, {460, 310, 0x00FF00}};  // For translation to map it back in place
+	Vertex vertices[] = {{200, 50, 0x00FF00}, {280, 290, 0xFFFFFF}, {660, 310, 0x0000FF}};
+	Vertex original_vertices[] = {{200, 50, 0x0000FF}, {280, 290, 0xFF0000}, {660, 310, 0x00FF00}};  // For translation to map it back in place
 
 	while(isRunning) {
 

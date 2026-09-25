@@ -15,7 +15,7 @@ void draw_init(uint32_t *fb, int w, int h) {
 
 void put_pixel(int x, int y, uint32_t color) {
 
-	if(y >= height || y < 0 || width * y + x >= width * height)
+	if(y >= height || y < 0 || width * y + x >= width * height || width * y + x < 0)
 		return;
 
 	framebuffer[width * y + x] = color;
@@ -194,7 +194,7 @@ void draw_tri(Vertex point1, Vertex point2, Vertex point3, bool fill) {
 
 			for(int x=closestX; x<=farthestX; x++) {
 
-				if(y >= height || y < 0 || width * y + x >= width * height)
+				if(y >= height || y < 0 || width * y + x >= width * height || width * y + x < 0)
 					continue;
 
 				if(framebuffer[width * y + x] != 0) {
