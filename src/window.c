@@ -5,11 +5,9 @@
 #include <SDL3/SDL.h>
 #include <stdio.h>
 
-#define WIDTH 320*4
-#define HEIGHT 200*4
-
-uint32_t framebuffer[WIDTH * HEIGHT];
-
+static uint32_t *framebuffer;
+static int width;
+static int height;
 
 void update_screen(float value, float degree, Vertex *vertices, Vertex *original_vertices) {
 
@@ -22,7 +20,7 @@ void update_screen(float value, float degree, Vertex *vertices, Vertex *original
 	linear_transform(vertices, 3, &rotate);
 
 	Matrix translate = translation_matrix(-2, 0);
-	affline_transform(vertices, original_vertices, 3, &translate, WIDTH);
+	affline_transform(vertices, original_vertices, 3, &translate, width);
 
 	for(int i=0; i<3; i++) {
 		printf("index: %d, new x: %.2f, new y: %.2f\n", i, vertices[i].x, vertices[i].y);
@@ -32,7 +30,12 @@ void update_screen(float value, float degree, Vertex *vertices, Vertex *original
 }
 
 
-int create_window(){
+int create_window(uint32_t *fb, int w, int h){
+
+	framebuffer = fb;
+	width = w;
+	height = h;
+
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
@@ -49,8 +52,8 @@ int create_window(){
 
 	window = SDL_CreateWindow(
 		"SDL Framebuffer",
-		WIDTH,
-		HEIGHT,
+		width,
+		height,
 		0
 	);
 
@@ -77,8 +80,8 @@ int create_window(){
 		renderer,
 		SDL_PIXELFORMAT_XRGB8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		WIDTH,
-		HEIGHT
+		width,
+		height
 	);
 	
 	if(texture == NULL) {
@@ -89,8 +92,7 @@ int create_window(){
 		return 1;
 	}
 
-	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST); // copy the original pixel to make new pixels which results in a bigger sharp pixel
-
+	
 	uint8_t isRunning = true;
 	
 	float value = 1.005f;
@@ -111,7 +113,7 @@ int create_window(){
 		}
 
 
-		memset(framebuffer, 0, sizeof(int) * WIDTH * HEIGHT);		
+		memset(framebuffer, 0, sizeof(int) * width * height);		
 		update_screen(value, 0.5f, vertices, original_vertices);
 		
 
@@ -119,7 +121,7 @@ int create_window(){
 			texture,
 			NULL,
 			framebuffer,
-			WIDTH * sizeof(uint32_t)
+			width * sizeof(uint32_t)
 		);
 			
 		SDL_RenderClear(renderer);
@@ -149,16 +151,4 @@ int create_window(){
 	SDL_DestroyWindow(window);
 	
 	SDL_Quit();
-}
-
-
-
-int main(void) {	
-
-	draw_init(framebuffer, WIDTH, HEIGHT);
-
-
-	if(create_window() == 1) 
-		return 1;
-	return 0;
 }
